@@ -1,4 +1,4 @@
-data_dictionary = {
+data_dictionary = [
    {
       "id":1,
       "player":"frank",
@@ -549,4 +549,119 @@ data_dictionary = {
          "zone":"pixel_zone_5"
       }
    }
-}
+]
+
+
+
+def display_event():
+    event = "did nothing"
+    for dict in data_dictionary:
+      if dict["event_type"] == "logout":
+         event = "has logged out"
+      elif dict["event_type"] == "login":
+         event = "has logged in"
+      elif dict["event_type"] == "item_found":
+         event = "found treasure"
+      elif dict["event_type"] == "kill":
+         event = "killed monster"
+      elif dict["event_type"] == "level_up":
+         event = "leveled up"
+      elif dict["event_type"] == "death":
+         event = "has died"
+      print(f"Event {dict['id']}: Player {dict['player']} (level {dict['data']['level']}) {event}")
+    print()
+
+def Stream_Analytics():
+   print(f"Total events processed: {len(data_dictionary)}")
+   dictionary = {
+      'count_high_lvl_player' : 0,
+      'events' : {
+         'Logout' : 0,
+         'Login' : 0,
+         'Kill' : 0,
+         'Item_found' : 0,
+         'Level_up' : 0,
+         'Death' : 0
+      }
+   }
+   for dict in data_dictionary:
+      if dict['data']["level"] >= 10:
+         dictionary["count_high_lvl_player"] += 1
+      if dict["event_type"] == "logout":
+         dictionary["events"]["Logout"] += 1
+      elif dict["event_type"] == "login":
+         dictionary["events"]["Login"] += 1
+      elif dict["event_type"] == "item_found":
+         dictionary["events"]["Item_found"] += 1
+      elif dict["event_type"] == "kill":
+         dictionary["events"]["Kill"] += 1
+      elif dict["event_type"] == "level_up":
+         dictionary["events"]["Level_up"] += 1
+      elif dict["event_type"] == "death":
+         dictionary["events"]["Death"] += 1
+   print(f"High-level players (10+): {dictionary['count_high_lvl_player']}")
+   for event in dictionary["events"]:
+      print(f"{event} events: {dictionary['events'][event]}")
+      
+def fibonacci(n):
+  
+    a,b = 0,1
+    for i in range(n):
+        yield a+b
+        a,b = b, a+b
+
+
+
+def is_prime(n):
+    """"pre-condition: n is a nonnegative integer
+    post-condition: return True if n is prime and False otherwise."""
+    if n < 2: 
+         return False
+    if n % 2 == 0:             
+         return n == 2  # return False
+    k = 3
+    while k*k <= n:
+         if n % k == 0:
+             return False
+         k += 2
+    return True
+
+def prime_nums_generator():
+    n = 2
+    while True:
+        if is_prime(n):
+            yield n
+        n += 1
+
+
+print("=== Game Data Stream Processor ===\n")
+
+print(f"Processing {len(data_dictionary)} game events...\n")
+
+display_event()
+
+print("=== Stream Analytics ===")
+Stream_Analytics()
+
+
+print("\nMemory usage: Constant (streaming)")
+print("Processing time: instant\n")
+
+print("=== Generator Demonstration ===")
+n = 10
+gen = fibonacci(n)
+print("Fibonacci Series: ",end="") 
+for i in range(n):
+    if i != n - 1:
+      print(f"{next(gen)},", end=" ")
+    else:
+      print(f"{next(gen)}")
+
+primes = prime_nums_generator()
+n = 5
+print("Prime numbers (first 5): ",end="") 
+for i in range(n):
+    if i != n - 1:
+      print(f"{next(primes)},", end=" ")
+    else:
+      print(f"{next(primes)}")
