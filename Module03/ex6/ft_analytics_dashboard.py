@@ -273,6 +273,7 @@ data_dictionary = {
 }
 
 players = data_dictionary["players"]
+sessions = data_dictionary["sessions"]
 
 print("=== Game Analytics Dashboard ===\n")
 
@@ -287,5 +288,40 @@ print(f"Active players: {active_playters}\n")
 
 print("=== Dict Comprehension Examples ===")
 players_score = {p: players[p]["total_score"] for p in players}
-score_categorties = {p: players[p]["total_score"] for p in players}
 print(f"Player scores: {players_score}")
+scores = [
+    data_dictionary["players"][player]["total_score"]
+    for player in data_dictionary["players"]
+]
+score_categories = {
+    "high": len([s for s in scores if s >= 2000]),
+    "medium": len([s for s in scores if 1000 <= s < 2000]),
+    "low": len([s for s in scores if s < 1000])
+}
+print(f"Score categories: {score_categories}")
+achievement_count = {p: players[p]['achievements_count'] for p in players}
+print(f"Achievement counts: {achievement_count}\n")
+
+print("=== Set Comprehension Examples ===")
+unique_players = {p['player'] for p in sessions}
+print(F"Unique players: {unique_players}")
+unique_achievements = {achievement for achievement in data_dictionary["achievements"]}
+print(F"Unique achievements: {unique_achievements}")
+active_regions = {p['mode'] for p in sessions}
+print(F"Active regions: {active_regions}\n")
+
+print("=== Combined Analysis ===")
+count_players = len({p for p in players})
+print(f"Total players: {count_players}")
+total_unique_achievements = sum([players[p]['achievements_count'] for p in players])
+print(f"Total unique achievements: {total_unique_achievements}")
+average_score = sum(players_score[key] for key in players_score) / count_players
+print(f"Average score: {average_score:.2f}")
+
+
+def get_dict_value(k):
+  return players_score[k]
+
+top_performer = max(players_score, key=get_dict_value)
+print(f"{top_performer} ({players_score[top_performer]} points, " 
+      + f"{achievement_count[top_performer]} achievements)")
