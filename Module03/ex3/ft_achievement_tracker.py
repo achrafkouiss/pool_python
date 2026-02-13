@@ -1,12 +1,12 @@
 data_dictionary = {
-   "alice":[
+   "alice": [
       "first_kill",
       "level_10",
       "treasure_hunter",
       "first_kill",
       "speed_demon"
    ],
-   "bob":[
+   "bob": [
       "first_kill",
       "level_10",
       "boss_slayer",
@@ -14,7 +14,7 @@ data_dictionary = {
       "first_kill",
       "collector"
    ],
-   "charlie":[
+   "charlie": [
       "level_10",
       "treasure_hunter",
       "boss_slayer",
@@ -50,4 +50,3 @@ bob_unique = bob.difference(alice)
 print(f"Alice vs Bob common: {alice_bob_common}")
 print(f"Alice unique: {alice_unique}")
 print(f"Bob unique: {bob_unique}")
-
