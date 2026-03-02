@@ -239,8 +239,8 @@ class StreamProcessor:
             stats: List[Dict[str, Union[str, int, float]]] = []
             string: str = ""
             priority: List[Dict[str, Union[str, int, float]]] = []
-            for index, obj in enumerate(self.list_of_stream):
-                obj.process_batch(data[index])
+            for obj, batch in zip(self.list_of_stream, data):
+                obj.process_batch(batch)
                 stats.append(obj.get_stats())
             for dic in stats:
                 last_key: str = list(dic)[-1]
@@ -263,11 +263,11 @@ class StreamProcessor:
             return f"StreamProcessor error: {e}\n"
 
 
-if __name__ == "__main__":
+def main():
     print("Initializing Sensor Stream...")
     SENSOR_001 = SensorStream("SENSOR_001")
     data = [
-        {"temp": 22.5, "min": 0, "max": 100},
+        {"temp": 22.5, "min": -100, "max": 100},
         {"humidity": 65, "min": 0, "max": 100},
         {"pressure": 1013, "min": 200, "max": 1000}
     ]
@@ -311,3 +311,10 @@ if __name__ == "__main__":
 
     print(StreamPro.process_data(data))
     print("All streams processed successfully. Nexus throughput optimal.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(e)

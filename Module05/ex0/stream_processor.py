@@ -5,11 +5,11 @@ from typing import Any, List, Union
 class DataProcessor(ABC):
     @abstractmethod
     def process(self, data: Any) -> str:
-        pass
+        return ""
 
     @abstractmethod
     def validate(self, data: Any) -> bool:
-        pass
+        return True
 
     def format_output(self, result: str) -> str:
         data: str
@@ -26,23 +26,26 @@ class DataProcessor(ABC):
 
 class NumericProcessor(DataProcessor):
     def process(self, data: Any) -> str:
-        string: str = ""
-        string += f"{data}|"
-        if not self.validate(data):
-            return "Cannot process data"
-        if isinstance(data, (int, float)):
-            data: List[Union[int, float]] = [data]
-        else:
-            data = list(data)
-        string += "Numeric data is verified|"
-        length: int = len(data)
-        total: Union[int, float] = sum(data)
-        average: Union[int, float] = total / length
-        result1: str = f"Processed {length} numeric values, "
-        result2: str = f"sum={total}, avg={average}"
-        result: str = result1 + result2
-        string += result
-        return super().format_output(string)
+        try:
+            string: str = ""
+            string += f"{data}|"
+            if not self.validate(data):
+                return "Cannot process data"
+            if isinstance(data, (int, float)):
+                data: List[Union[int, float]] = [data]
+            else:
+                data = list(data)
+            string += "Numeric data is verified|"
+            length: int = len(data)
+            total: Union[int, float] = sum(data)
+            average: Union[int, float] = total / length
+            result1: str = f"Processed {length} numeric values, "
+            result2: str = f"sum={total}, avg={average}"
+            result: str = result1 + result2
+            string += result
+            return super().format_output(string)
+        except Exception as e:
+            print(e)
 
     def validate(self, data: Any) -> bool:
         if isinstance(data, (int, float)):
@@ -54,18 +57,20 @@ class NumericProcessor(DataProcessor):
 
 class TextProcessor(DataProcessor):
     def process(self, data: Any) -> str:
-        string: str = ""
-        string += f"\"{data}\"|"
-        if self.validate(data):
-            string += "Text data verified|"
-            leng: int = len(data)
-            words: List[str] = data.split()
-            count: int = len(words)
-            result: str = f"Processed text: {leng} characters, {count} words"
-            string += result
-            return super().format_output(string)
-        else:
-            return ("Cannot process data")
+        try:
+            string: str = ""
+            string += f"\"{data}\"|"
+            if self.validate(data):
+                string += "Text data verified|"
+                leng: int = len(data)
+                words: List[str] = data.split()
+                count: int = len(words)
+                string += f"Processed text: {leng} characters, {count} words"
+                return super().format_output(string)
+            else:
+                return ("Cannot process data")
+        except Exception as e:
+            print(e)
 
     def validate(self, data: Any) -> bool:
         return isinstance(data, str)
@@ -73,20 +78,23 @@ class TextProcessor(DataProcessor):
 
 class LogProcessor(DataProcessor):
     def process(self, data: Any) -> str:
-        string: str = ""
-        string += f"\"{data}\"|"
-        if self.validate(data):
-            string += "Log entry verified|"
-            level: str
-            message: str
-            level, message = data.split(" ", maxsplit=1)
-            if "ERROR:" == level:
-                string += f"[ALERT] ERROR level detected: {message}"
-            elif "INFO:" == level:
-                string += f"[INFO] INFO level detected: {message}"
-            return super().format_output(string)
-        else:
-            return ("Cannot process data")
+        try:
+            string: str = ""
+            string += f"\"{data}\"|"
+            if self.validate(data):
+                string += "Log entry verified|"
+                level: str
+                message: str
+                level, message = data.split(" ", maxsplit=1)
+                if "ERROR:" == level:
+                    string += f"[ALERT] ERROR level detected: {message}"
+                elif "INFO:" == level:
+                    string += f"[INFO] INFO level detected: {message}"
+                return super().format_output(string)
+            else:
+                return ("Cannot process data")
+        except Exception as e:
+            print(e)
 
     def validate(self, data: Any) -> bool:
         if not isinstance(data, str):
@@ -100,7 +108,7 @@ class LogProcessor(DataProcessor):
         return False
 
 
-if __name__ == "__main__":
+def main():
     print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===\n")
 
     objects = [NumericProcessor(), TextProcessor(), LogProcessor()]
@@ -121,3 +129,10 @@ if __name__ == "__main__":
         print(f"Result {index + 1}:", res[len("Output:"):].strip())
 
     print("\nFoundation systems online. Nexus ready for advanced streams.")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as e:
+        print(e)

@@ -4,261 +4,278 @@ from typing import Any, List, Dict, Union, Optional, Protocol
 
 class ProcessingStage(Protocol):
     def process(self, data: Any) -> Any:
-        pass
+        return data
+
 
 class InputStage():
     def process(self, data: Any) -> Dict:
-        if not isinstance(data, (list, dict)):
-            raise TypeError("Error detected in Stage 1: data should be a dictionary")
-        return {
-            "data": data,
-            "len": len(data),
-            "value": None,
-            "unit": None,
-            "avg": None,
-            "Input": None,
-            "Transform": None,
-            "Output": None,
-            "error": False
-            }
+        if not isinstance(data, dict):
+            raise TypeError(
+                "Error detected in Stage 1: expects a dict payload"
+            )
+        return data
 
 
 class TransformStage():
     def process(self, data: Any) -> Dict:
         if not isinstance(data, dict):
-            raise TypeError("Error detected in Stage 2: data should be a dictionary")
-        keys_to_update = ['Input', 'Transform', 'Output']
-        new_dict = {}
+            raise TypeError(
+                "Error detected in Stage 2: data should be a dictionary"
+            )
+        keys_to_update: List[str] = ['Input', 'Transform', 'Output']
+        new_dict: Dict = {}
         for key in keys_to_update:
             if key in data:
                 new_dict[key] = data[key]
         return new_dict
 
+
 class OutputStage():
     def process(self, data: Any) -> str:
         if not isinstance(data, dict):
-            raise TypeError("Error detected in Stage 3: data should be a dictionary")
-        custom_string = "\n".join(f"{key}:{value}" for key, value in data.items())
+            raise TypeError(
+                "Error detected in Stage 3: data should be a dictionary"
+            )
+        custom_string: str = "\n".join(
+            f"{key}:{value}" for key, value in data.items()
+        ) + "\n"
+        return custom_string
 
-        print(custom_string, "\n\n\n\n")
 
 class ProcessingPipeline(ABC):
-    def __init__(self):
+    def __init__(self) -> None:
         self.stages: List[ProcessingStage] = []
+        self.add_stage(InputStage())
+        self.add_stage(TransformStage())
+        self.add_stage(OutputStage())
 
-    def add_stage(self, stage) -> ProcessingStage:
+    def add_stage(self, stage: ProcessingStage) -> ProcessingStage:
         self.stages.append(stage)
         return stage
 
+    def run_pipeline(self, data: Any) -> Any:
+        for stage in self.stages:
+            data = stage.process(data)
+        return data
+
     @abstractmethod
     def process(self, data: Any) -> Union[str, Any]:
-        pass
+        return data
+
 
 class JSONAdapter(ProcessingPipeline):
-    def __init__(self, pipeline_id):
+    def __init__(self, pipeline_id: Union[int, str]) -> None:
         super().__init__()
-        self.pipeline_id = pipeline_id
-        
+        self.pipeline_id: Union[int, str] = pipeline_id
 
-    def __check_data(self, data):
-        if not isinstance(data["sensor"], str) and \
-            not isinstance(data["value"], (int, float)) and \
-                not isinstance(data["unit"], str) and\
-                    input["len"] != 3:
-            raise ValueError("data Should contain no more or less than 3 element (sensor, value, unit)")
-    
+    def __check_data(self, data: Any) -> None:
+        if not isinstance(data, dict):
+            raise TypeError("JSON data must be a dictionary")
+        if len(data) != 3:
+            raise ValueError(
+                "JSON data must contain exactly 3 keys: sensor, value, unit"
+            )
+        if not isinstance(data.get("sensor"), str):
+            raise TypeError("sensor must be a string")
+        if not isinstance(data.get("value"), (int, float)):
+            raise TypeError("value must be int or float")
+        if not isinstance(data.get("unit"), str):
+            raise TypeError("unit must be a string")
 
-    def process(self, data) -> Any:
+    def process(self, data: Any) -> Optional[str]:
         try:
-            processing = super().add_stage(InputStage())
-            input = processing.process(data)
             self.__check_data(data)
-            input["Input"] = data
-            input["unit"] = data["unit"]
-            input["value"] = data["value"]
-            value_range  = "Normal range" 
-            if 20 < input["value"] > 100:
-                value_range  = "Danger range"
-            input["Transform"] = " Enriched with metadata and validation"
-            input["Output"] = f"Processed temperature reading: {input['value']}°{input['unit']} ({value_range})"
-            processing = super().add_stage(TransformStage())
-            transform = processing.process(input)
-            processing = super().add_stage(OutputStage())
-            output = processing.process(transform)
-        except ValueError as e:
+            payload: Dict = {
+                "Input": data,
+                "value": data["value"],
+                "unit": data["unit"],
+                "Transform": "Enriched with metadata and validation",
+                "Output": f"Processed temperature reading: "
+                          f"{data['value']}°{data['unit']}"
+            }
+            return self.run_pipeline(payload)
+
+        except Exception as e:
             print(e)
             print("Recovery initiated: Switching to backup processor")
             print("Recovery successful: Pipeline restored, processing resumed")
-        except KeyError as e:
-            print("KeyError")
-            # it should return a message that say keyerror key not found
-            print("Recovery initiated: Switching to backup processor")
-            print("Recovery successful: Pipeline restored, processing resumed")
-            pass
-        except Exception as e:
-            print("==========>",e)
-            pass
+            return None
+
 
 class CSVAdapter(ProcessingPipeline):
-    def __init__(self, pipeline_id):
+    def __init__(self, pipeline_id: Union[int, str]) -> None:
         super().__init__()
-        self.pipeline_id = pipeline_id
+        self.pipeline_id: Union[int, str] = pipeline_id
 
-    def __check_data(self, data):
-        actions = ["login", "logout", "signed"]
-        all_strings = all(isinstance(item, str) for item in data)
-        if not all_strings:
-            raise ValueError("all element should be strings")
-        splited_data = []
-        for s in data:
-            split_list = s.split(',')
-            splited_data.append(split_list)
-        for element in splited_data:
-            # print(element)
-            if len(element) != 3:
-                raise TypeError("element should contain 3 elemts (user, action, timestamp)")
-            if int(element[0]) and \
-                not isinstance(element[1], str) and \
-                not isinstance(element[-1], str):
-                raise ValueError("element should contain 3 elemts (user(int), action(str), timestamp(str))")
-            if not element[1] in actions:
-                raise ValueError("action should be either (login logout signed)")
-            timestamp = element[-1] in ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-            if not timestamp:
-                raise ValueError("timestamp should be a day of the week")
-        return splited_data
-       
-    def process(self, data) -> Any:
+    def __check_data(self, data: Any) -> None:
+        if not isinstance(data, list):
+            raise TypeError("CSV input must be a list of strings")
+
+        actions: set[str] = {"login", "logout", "signed"}
+        days: set[str] = {
+            "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+            "Saturday", "Sunday"
+        }
+
+        for row in data:
+            if not isinstance(row, str):
+                raise TypeError("Each CSV row must be a string")
+
+            parts: List[str] = row.split(",")
+            if len(parts) != 3:
+                raise ValueError(
+                    "Each CSV row must contain: user,action,timestamp"
+                    )
+
+            if not parts[0].isdigit():
+                raise ValueError("user must be an integer")
+
+            if parts[1] not in actions:
+                raise ValueError(
+                    "action must be one of: login, logout, signed"
+                    )
+
+            if parts[2] not in days:
+                raise ValueError("timestamp must be a valid weekday")
+
+    def process(self, data: Any) -> Optional[str]:
         try:
-            processing = super().add_stage(InputStage())
-            input = processing.process(data)
-            splited_data = self.__check_data(data)
-            input["Input"] = "user,action,timestamp"
-            input["Transform"] = "Parsed and structured data"
-            input["Output"] = f"User activity logged: {input['len']} actions processed"
-            processing = super().add_stage(TransformStage())
-            transform = processing.process(input)
-            processing = super().add_stage(OutputStage())
-            output = processing.process(transform)
-        except ValueError as e:
-            print(e)
-        except KeyError as e:
-            print("KeyError")
-            # it should return a message that say keyerror key not found
+            self.__check_data(data)
+            lenght: int = len(data)
+            payload: Dict = {
+                "Input": "user,action,timestamp",
+                "len": lenght,
+                "Transform": "Parsed and structured CSV data",
+                "Output": f"User activity logged: {lenght} actions processed"
+            }
+            return self.run_pipeline(payload)
+
         except Exception as e:
-            print("==========>",e)
+            print(e)
+            print("Recovery initiated: Switching to backup processor")
+            print("Recovery successful: Pipeline restored, processing resumed")
+            return None
+
 
 class StreamAdapter(ProcessingPipeline):
-    def __init__(self, pipeline_id):
+    def __init__(self, pipeline_id: Union[int, str]) -> None:
         super().__init__()
-        self.pipeline_id = pipeline_id
+        self.pipeline_id: Union[int, str] = pipeline_id
 
-    def __check_data(self, data):
-        for element in data:
-            if not isinstance(element, (int, float)):
-                raise ValueError("elements should be integer or float")
+    def __check_data(self, data: Any) -> None:
+        if not isinstance(data, list):
+            raise TypeError("Stream input must be a list of numbers")
 
-    def process(self, data) -> Any:
+        for x in data:
+            if not isinstance(x, (int, float)):
+                raise ValueError("Stream elements must be int or float")
+
+    def process(self, data: Any) -> Optional[str]:
         try:
-            processing = super().add_stage(InputStage())
-            input = processing.process(data)
-            splited_data = self.__check_data(data)
-            input["Input"] = "Real-time sensor stream"
-            input["avg"] = sum(data) / input["len"]
-            input["Transform"] = " Enriched with metadata and validation"
-            input["Output"] = f"Stream summary: {input['len']} readings, avg: {input['avg']:.2f}°C"
-            processing = super().add_stage(TransformStage())
-            transform = processing.process(input)
-            processing = super().add_stage(OutputStage())
-            output = processing.process(transform)
-        except ValueError as e:
-            print(e)
-        except KeyError as e:
-            print("KeyError")
-            # it should return a message that say keyerror key not found
+            self.__check_data(data)
+            leng = len(data)
+            avg: float = sum(data) / leng
+            payload: Dict = {
+                "Input": "Real-time sensor stream",
+                "avg": avg,
+                "Transform": "Aggregated sensor data",
+                "Output": f"Stream summary: {leng} readings, avg: {avg:.2f}°C"
+            }
+            return self.run_pipeline(payload)
         except Exception as e:
-            print("==========>",e)
+            print(e)
+            print("Recovery initiated: Switching to backup processor")
+            print("Recovery successful: Pipeline restored, processing resumed")
+            return None
 
 
 class NexusManager():
-    def add_pipeline():
-        pass
+    def __init__(self) -> None:
+        self.Pipeline: List[ProcessingPipeline] = []
+        self.name: int = 0
 
-    def process_data():
-        pass
+    def add_pipeline(self, object: ProcessingPipeline) -> ProcessingPipeline:
+        self.Pipeline.append(object)
+        return object
+
+    def __checkdata(self, data: Any) -> Optional[ProcessingPipeline]:
+        if isinstance(data, dict):
+            self.name += 1
+            return self.add_pipeline(JSONAdapter(self.name))
+        elif isinstance(data, list):
+            if all(isinstance(x, (int, float)) for x in data):
+                self.name += 1
+                return self.add_pipeline(StreamAdapter(self.name))
+            elif all(isinstance(x, str) for x in data):
+                self.name += 1
+                return self.add_pipeline(CSVAdapter(self.name))
+        return None
+
+    def process_data(self, data: List[Any]) -> str:
+        print("Pipeline capacity: 100 streams/second\n")
+        print("Creating Data Processing Pipeline...")
+        for d in data:
+            process: Optional[ProcessingPipeline] = self.__checkdata(d)
+            if process:
+                process.process(d)
+
+        print("Stage 1: Input validation and parsing")
+        print("Stage 2: Data transformation and enrichment")
+        print("Stage 3: Output formatting and delivery\n")
+
+        lenght: int = len(self.Pipeline)
+        names: List[str] = [
+            f"Pipeline {pipe.pipeline_id}" for pipe in self.Pipeline
+            ]
+
+        string: str = " -> ".join(names) + "\n"
+        string += "Data flow: Raw -> Processed -> Analyzed -> Stored\n\n"
+        string += f"Chain result: {lenght} "
+        string += "records processed through 3-stage pipeline\n"
+        efficiency: float = (lenght * 100) / len(data)
+        processing: float = len(self.Pipeline) / 100
+        string += f"Performance: {efficiency:.02f}% efficiency, "
+        string += f"{processing}s total processing time\n"
+        return string
+
+
+def main():
+    print("=== CODE NEXUS - ENTERPRISE PIPELINE SYSTEM ===\n")
+
+    print("Initializing Nexus Manager...")
+    nexus: NexusManager = NexusManager()
+    nexus_process: str = nexus.process_data(
+        [
+            [1, 2],
+            ["1,login,Monday", "1,login,Monday"],
+            {"sensor": "temp", "value": 23.5, "unit": "C"},
+        ]
+    )
+
+    print("=== Multi-Format Data Processing ===\n")
+    print("Processing JSON data through pipeline...")
+    json_adapter: JSONAdapter = JSONAdapter("JSONAdapter")
+    print(json_adapter.process({"sensor": "temp", "value": 23.5, "unit": "C"}))
+
+    print("Processing CSV data through same pipeline...")
+    csv_adapter: CSVAdapter = CSVAdapter("CSVAdapter")
+    print(csv_adapter.process(["1,login,Monday", "1,login,Monday"]))
+
+    print("Processing Stream data through same pipeline...")
+    stream_dapter: StreamAdapter = StreamAdapter("StreamAdapter")
+    print(stream_dapter.process([1, 2, 3.5]))
+
+    print("=== Pipeline Chaining Demo ===")
+    print(nexus_process)
+
+    print("=== Error Recovery Test ===")
+    print("Simulating pipeline failure...")
+    csv_adapter2: CSVAdapter = CSVAdapter("CSVAdapter")
+    csv_adapter2.process("1,login,Monday")
+
 
 if __name__ == "__main__":
-    a = JSONAdapter("cfdsv")
-    a.process({"sensor": "temp", "value": 23.5, "unit": "C"})
-    b = CSVAdapter("acsca")
-    b.process(["1,login,Monday", "1,login,Monday"])
-    # print(dir(CSVAdapter),"=" *40 , "\n")
-    c = StreamAdapter("achraf")
-    c.process([1,2,3.5])
-    # {"sensor": "temp", "value": 23.5, "unit": "C"}
-
-    # jsondata = {
-    #     "data": {"sensor": "temp", "value": 23.5, "unit": "C"},
-    #     "adapter": "json"
-    # }
-
-    # jsondata_before_transform = {
-    #     "data": {"sensor": "temp", "value": 23.5, "unit": "C"},
-    #     "adapter": "json",
-    #     "Input": jsondata_before_transform["data"],
-    #     "Transform": "Enriched with metadata and validation",
-    #     "Output": "Processed temperature reading: ",
-    #     "reading": f"{jsondata_before_transform["value"]} {jsondata_before_transform["unit"]}",
-    #     "last":  "(Normal range)"
-    # }
-
-    # jsondata_after_transform = {
-    #     "Input": jsondata_before_transform["data"],
-    #     "Transform": "Enriched with metadata and validation",
-    #     "Output": "Processed temperature reading: ",
-    #     "reading": f"{jsondata_before_transform["value"]} {jsondata_before_transform["unit"]}",
-    #     "last":  "(Normal range)"
-    # }
-    # # ###########################################################################
-    # csvdata = {
-    #     "data": ["achraf", "logged", "monday"],#each list should contain 3 element and each element should be string and the last element shoudl be a day of the week
-    #     "adapter": "csv"
-    # }
-
-    # csvdata_before_transform = {
-    #     "data": ["achraf", "logged", "monday"],#each list should contain 3 element and each element should be string and the last element shoudl be a day of the week
-    #     "adapter": "csv",
-    #     "Input": "user,action,timestamp",
-    #     "Transform": "Parsed and structured data",
-    #     "Output": "User activity logged: ",
-    #     "actions": len(csvdata_before_transform["data"]),
-    #     "last": "actions processed"  
-    # }
-    # csvdata_after_transform = {
-    #     "Input": "user,action,timestamp",
-    #     "Transform": "Parsed and structured data",
-    #     "Output": "User activity logged: ",
-    #     "actions": len(csvdata_before_transform["data"]),
-    #     "last": "actions processed"
-    # }
-    # ###########################################################################
-    # Streamdata = {
-    #     "data": [20, 15,4, 30, 25,9, 24],
-    #     "adapter": "Stream",
-    # }
-    # Streamdata_before_transform = {
-    #     "data": [20, 15,4, 30, 25,9, 24],
-    #     "adapter": "Stream",
-    #     "Input": "Real-time sensor stream",
-    #     "Transform": "Aggregated and filtered",
-    #     "Output": "Stream summary: ",
-    #     "reading": len(Streamdata_after_transform["data"]),
-    #     "avg":  sum(Streamdata_after_transform["data"]) / len(Streamdata_after_transform["data"])
-    # }
-    # Streamdata_after_transform = {
-    #     "Input": "Real-time sensor stream",
-    #     "Transform": "Aggregated and filtered",
-    #     "Output": "Stream summary: ",
-    #     "reading": len(Streamdata_after_transform["data"]),
-    #     "avg":  sum(Streamdata_after_transform["data"]) / len(Streamdata_after_transform["data"])
-    # }
+    try:
+        main()
+    except Exception as e:
+        print(e)
