@@ -1,4 +1,3 @@
-
 from .elements import create_fire, create_water, create_earth, create_air
 
 def healing_potion():
@@ -12,7 +11,7 @@ def strength_potion():
 
 
 def invisibility_potion():
-    return  f"Invisibility potion brewed with {create_air()} and {create_water()}"
+    return f"Invisibility potion brewed with {create_air()} and {create_water()}"
 
 
 def wisdom_potion():
