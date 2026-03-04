@@ -47,6 +47,12 @@ class SensorStream(DataStream):
             data: List[Union[int, float]] = self.filter_data(
                 data_batch, existing_keys[0]
             )
+            if data == []:
+                return (
+                    "data should only contain temp, humidity, pressure, "
+                    "visibility, wind, Cloudiness with each one containg "
+                    "the maximum and minimum range (max, min)\n"
+                )
             string += "Processing sensor batch: ["
             batch_len: int = len(data_batch)
             for index, dictionary in enumerate(data_batch):
