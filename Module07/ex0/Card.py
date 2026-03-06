@@ -11,9 +11,7 @@ class Card(ABC):
         pass
 
     def get_card_info(self) -> dict:
-       card_info: dict = {}
-       card_info.update(self.__dict__.items())
-       return card_info
+       return self.__dict__
 
     def is_playable(self, available_mana: int) -> bool:
         if available_mana >= self.cost:

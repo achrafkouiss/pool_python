@@ -1,19 +1,29 @@
 from .CreatureCard import CreatureCard
+
 try:
     print("\n=== DataDeck Card Foundation ===\n")
 
     print("\nTesting Abstract Base Class Design:\n")
 
     print("CreatureCard Info:")
-    obj = CreatureCard("Fire Dragon", 5, "Legendary", 7, 5)
-    card_info = obj.get_card_info()
-    print(card_info, "\n")
+    fire_dragon = CreatureCard("Fire Dragon", 5, "Legendary", 7, 5)
+    goblin_warrior = CreatureCard("Goblin Warrior", 2, "Common", 2, 10)
+    fire_dragon_card_info = fire_dragon.get_card_info()
+    print()
+    print(fire_dragon_card_info, "\n")
 
     print("Playing Fire Dragon with 6 mana available:")
-    print(f"Playable: {obj.is_playable(6)}")
-    print(f"Play result: {obj.play({'mana': 4})}\n")
+    print(f"Playable: {fire_dragon.is_playable(6)}")
+    print(f"Play result: {fire_dragon.play({'mana': 6})}\n")
+
 
     print("Fire Dragon attacks Goblin Warrior:")
-    print(f"Attack result: ")
+    print(
+        f"Attack result: {fire_dragon.attack_target(goblin_warrior)}\n"
+        )
+    print("Testing insufficient mana (3 available):")
+    print(f"Playable: {fire_dragon.is_playable(3)}")
+
+    print("Abstract pattern successfully demonstrated!")
 except ValueError:
     pass
