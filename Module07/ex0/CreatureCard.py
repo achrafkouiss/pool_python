@@ -1,6 +1,6 @@
 from .Card import Card
 
-class CreatrueCard(Card):
+class CreatureCard(Card):
     def __init__(self, name: str, cost: int, rarity: str, attack: int, health: int):
         super().__init__(name, cost, rarity)
         ## the probleme here is that i could not raise (try/except is not autorized)
