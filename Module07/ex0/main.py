@@ -2,7 +2,7 @@ from .CreatureCard import CreatureCard
 from enum import Enum
 
 class Rarity(Enum):
-    COMMON: str = "Common"
+    COMMON: str = "Common" 
     UNCOMMON: str = "Uncomon"
     RARE: str = "Rare"
     ELITE: str = "Elite"
