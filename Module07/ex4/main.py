@@ -41,4 +41,7 @@ for entry in leaderboard:
     )
 
 print("\nPlatform Report: ")
-print(tournament.generate_tournament_report())
+print(f"{tournament.generate_tournament_report()}\n")
+
+print("=== Tournament Platform Successfully Deployed! ===")
+print("All abstract patterns working together harmoniously!")

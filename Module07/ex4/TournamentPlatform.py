@@ -1,4 +1,5 @@
 from .TournamentCard import TournamentCard
+import random
 
 class TournamentPlatform:
     def __init__(self):
@@ -19,29 +20,29 @@ class TournamentPlatform:
     def create_match(self, card1_id: str, card2_id: str) -> dict:
         for card in self.tournament_cards:
             if card.name == card1_id:
-                fist_card = card
+                first_card = card
             elif card.name == card2_id:
                 second_card = card
-        fist_card.play({"mana": 10})
+        if first_card is None or second_card is None:
+            return {"error": "One or both cards not found in tournament."}
+        first_card.play({"mana": 10})
         second_card.play({"mana": 10})
-        index = 2
+        attacker, defender = (first_card, second_card) if random.choice([True, False]) else (second_card, first_card)
         while True:
-            if index % 2:
-                stat = fist_card.attack(second_card)
-            else:
-                stat = second_card.attack(fist_card)
-            if not stat["alive"]:
+            combat_result = attacker.attack(defender)
+            if not combat_result["alive"]:
                 break
-        if fist_card.name == stat["attacker"]:
-            winner_rating = fist_card.calculate_rating()
-            loser_rating = second_card.calculate_rating()
-        elif second_card.name == stat["attacker"]:
-            winner_rating = second_card.calculate_rating()
-            loser_rating = fist_card.calculate_rating()
+            attacker, defender = defender, attacker
+        if attacker.name == combat_result["attacker"]:
+            winner_rating = attacker.calculate_rating()
+            loser_rating = defender.calculate_rating()
+        else:
+            winner_rating = defender.calculate_rating()
+            loser_rating = attacker.calculate_rating()
         self.matches_played += 1
         return {
-            'winner': stat["attacker"],
-            'loser': stat["defender"],
+            'winner': combat_result["attacker"],
+            'loser': combat_result["defender"],
             'winner_rating': winner_rating,
             'loser_rating': loser_rating
             }

@@ -21,4 +21,4 @@ class CardFactory(ABC):
 
     @abstractmethod
     def get_supported_types(self) -> dict:
-        pass 
+        pass

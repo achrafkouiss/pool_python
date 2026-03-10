@@ -1,8 +1,11 @@
 from ex0.Card import Card
 import random
+from typing import Dict, List
 
-class Deck():
-    list_of_cards: list[Card] = []
+
+class Deck:
+    def __init__(self):
+        self.list_of_cards: List[Card] = []
 
     def add_card(self, card: Card) -> None:
         self.list_of_cards.append(card)
@@ -18,17 +21,17 @@ class Deck():
         random.shuffle(self.list_of_cards)
 
     def draw_card(self) -> Card:
-        card_drawed = random.choice(self.list_of_cards)
+        card_drawed: Card = random.choice(self.list_of_cards)
         self.list_of_cards.remove(card_drawed)
         return card_drawed
 
     def get_deck_stats(self) -> dict:
-        stats = {
+        stats: Dict[str, float | int] = {
             "total_cards": len(self.list_of_cards),
             "creatures": 0,
             "spells": 0,
             "artifacts": 0,
-            "avg_cost": 0
+            "avg_cost": 0,
         }
         totol_cost: int = 0
         for card in self.list_of_cards:
