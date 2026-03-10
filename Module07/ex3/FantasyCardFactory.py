@@ -4,6 +4,15 @@ from ex1.ArtifactCard import ArtifactCard
 from ex1.SpellCard import SpellCard
 from ex3.CardFactory import CardFactory
 import random
+from enum import Enum
+
+
+class Rarity(Enum):
+    COMMON: str = "Common" 
+    UNCOMMON: str = "Uncomon"
+    RARE: str = "Rare"
+    ELITE: str = "Elite"
+    LEGENDARY: str = "Lgendary"
 
 class FantasyCardFactory(CardFactory):
     def create_creature(self, name_or_power: str | int | None = None) -> Card:
@@ -27,35 +36,35 @@ class FantasyCardFactory(CardFactory):
             "common": {
                 "name": name, 
                 "cost": cost,
-                "rarity": "Common",
+                "rarity": Rarity.COMMON.value,
                 "attack": random.randint(1, 3),
                 "health": random.randint(1, 3)
                 },
             "uncomon": {
                 "name": name, 
                 "cost": cost,
-                "rarity": "Uncomon",
+                "rarity": Rarity.UNCOMMON.value,
                 "attack": random.randint(3, 5),
                 "health": random.randint(3, 5)
                 },
             "rare": {
                 "name": name, 
                 "cost": cost,
-                "rarity": "Rare",
+                "rarity": Rarity.RARE.value,
                 "attack": random.randint(5, 8),
                 "health": random.randint(5, 8)
                 },
             "elite": {
                 "name": name, 
                 "cost": cost,
-                "rarity": "ELITE",
+                "rarity": Rarity.ELITE.value,
                 "attack": random.randint(8, 10),
                 "health": random.randint(8, 10)
                 },
             "lengendary": {
                 "name": name, 
                 "cost": cost,
-                "rarity": "Lgendary",
+                "rarity": Rarity.LEGENDARY.value,
                 "attack": random.randint(10, 12),
                 "health": random.randint(10, 12)
                 }
@@ -88,31 +97,31 @@ class FantasyCardFactory(CardFactory):
             "common": {
                 "name": name,
                 "cost": random.randint(1, 5),
-                "rarity": "Common",
+                "rarity": Rarity.COMMON.value,
                 "effect_type": effect_type,
                 },
             "uncomon": {
                 "name": name, 
                 "cost": random.randint(1, 5),
-                "rarity": "Uncomon",
+                "rarity": Rarity.UNCOMMON.value,
                 "effect_type": effect_type
                 },
             "rare": {
                 "name": name, 
                 "cost": random.randint(1, 5),
-                "rarity": "Rare",
+                "rarity": Rarity.RARE.value,
                 "effect_type": effect_type
                 },
             "elite": {
                 "name": name, 
                 "cost": random.randint(1, 5),
-                "rarity": "Elite",
+                "rarity": Rarity.ELITE.value,
                 "effect_type": effect_type
                 },
             "lengendary": {
                 "name": name, 
                 "cost": random.randint(1, 5),
-                "rarity": "Lgendary",
+                "rarity": Rarity.LEGENDARY.value,
                 "effect_type": effect_type
                 }
         }
@@ -153,35 +162,35 @@ class FantasyCardFactory(CardFactory):
             "common": {
                 "name": name,
                 "cost": random.randint(1, 5),
-                "rarity": "Common",
+                "rarity": Rarity.COMMON.value,
                 "durability": durability,
                 "effect": effect_type
                 },
             "uncomon": {
                 "name": name, 
                 "cost": random.randint(1, 5),
-                "rarity": "Uncomon",
+                "rarity": Rarity.UNCOMMON.value,
                 "durability": durability,
                 "effect": effect_type
                 },
             "rare": {
                 "name": name, 
                 "cost": random.randint(1, 5),
-                "rarity": "Rare",
+                "rarity": Rarity.RARE.value,
                 "durability": durability,
                 "effect": effect_type
                 },
             "elite": {
                 "name": name, 
                 "cost": random.randint(1, 5),
-                "rarity": "Elite",
+                "rarity": Rarity.ELITE.value,
                 "durability": durability,
                 "effect": effect_type
                 },
             "lengendary": {
                 "name": name, 
                 "cost": random.randint(1, 5),
-                "rarity": "Lgendary",
+                "rarity": Rarity.LEGENDARY.value,
                 "durability": durability,
                 "effect": effect_type
                 }
@@ -213,3 +222,4 @@ class FantasyCardFactory(CardFactory):
         card = methode(random.randint(1, 10)) 
         support_card.update({card.__class__.__name__:card})
         return support_card
+
