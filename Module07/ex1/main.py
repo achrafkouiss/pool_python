@@ -31,9 +31,6 @@ print("\nBuilding deck with different card types...")
 print(f"Deck stats: {deck.get_deck_stats()}\n")
 
 print("Drawing and playing cards:\n")
-# looping thraugh a copy because when we loop over the list
-#  the we face a probleme the list index go but the list is shortened
-#  in this case it loop only 2 times not 3
 for _ in deck.list_of_cards[:]:
     card = deck.draw_card()
     if isinstance(card, CreatureCard):

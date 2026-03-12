@@ -1,16 +1,17 @@
 from ex0.Card import Card
 from ex2.Combatable import Combatable
 from .Rankable import Rankable
+from typing import Dict
 
 
 class TournamentCard(Card, Combatable, Rankable):
     def __init__(self, name, cost, rarity, damage, health):
         super().__init__(name, cost, rarity)
-        self.damage = damage
-        self.health = health
-        self.wins = 0
-        self.loss = 0
-        self.rate = self.calculate_rating()
+        self.damage: int = damage
+        self.health: int = health
+        self.wins: int = 0
+        self.loss: int = 0
+        self.rate: int = self.calculate_rating()
 
     def play(self, game_state: dict) -> dict:
         if "mana" not in game_state:
@@ -19,29 +20,29 @@ class TournamentCard(Card, Combatable, Rankable):
             }
         if self.is_playable(game_state["mana"]):
             return {
-            "card_played": self.name,
-            "mana_used": self.cost,
-            "effect": "Card is  summoned to battlefield",
-        }
+                "card_played": self.name,
+                "mana_used": self.cost,
+                "effect": "Card is  summoned to battlefield",
+            }
         return {
             "card_played": self.name,
             "mana_used": 0,
-            "effect": "Cannot summon cad to battlefield because of"\
-                  " insufficient mana",
+            "effect": "Cannot summon cad to battlefield because of"
+            " insufficient mana",
         }
 
     def attack(self, target) -> dict:
-        card_stats = self.get_card_info()
-        target_stats = target.get_card_info()
-        combat: dict = {}
+        card_stats: Dict = self.get_card_info()
+        target_stats: Dict = target.get_card_info()
+        combat: Dict = {}
         if card_stats["damage"] >= target_stats["damage"]:
             combat = target.defend(card_stats["damage"])
             combat.update(
                 {
                     "attacker": card_stats["name"],
                     "defender": target_stats["name"],
-                    "damage": card_stats["damage"]
-                    }
+                    "damage": card_stats["damage"],
+                }
             )
         else:
             combat = self.defend(target_stats["damage"])
@@ -49,8 +50,8 @@ class TournamentCard(Card, Combatable, Rankable):
                 {
                     "attacker": target_stats["name"],
                     "defender": card_stats["name"],
-                    "damage": target_stats["damage"]
-                    }
+                    "damage": target_stats["damage"],
+                }
             )
         if not combat["alive"]:
             if combat["attacker"] in card_stats:
@@ -63,9 +64,7 @@ class TournamentCard(Card, Combatable, Rankable):
         self.health -= incoming_damage
         if self.health < 0:
             self.update_losses(1)
-            return {
-                "alive": False
-            }
+            return {"alive": False}
         return {
             "alive": True,
         }
@@ -76,11 +75,11 @@ class TournamentCard(Card, Combatable, Rankable):
             "Uncomon": 1100,
             "Rare": 1150,
             "Elite": 1200,
-            "Lgendary": 2000
+            "Lgendary": 2000,
         }
-        loses = 16 * self.loss
-        wins = 16 * self.wins
-        self.rate  = starting_scores[self.rarity] + wins - loses
+        loses: int = 16 * self.loss
+        wins: int = 16 * self.wins
+        self.rate = starting_scores[self.rarity] + wins - loses
         return self.rate
 
     def get_tournament_stats(self) -> dict:
@@ -101,7 +100,7 @@ class TournamentCard(Card, Combatable, Rankable):
         return {
             "Interfaces": [base.__name__ for base in self.__class__.__bases__],
             "Rating": self.calculate_rating(),
-            "Record": f"{self.wins}-{self.loss}"
+            "Record": f"{self.wins}-{self.loss}",
         }
 
     def get_combat_stats(self) -> dict:
