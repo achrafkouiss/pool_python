@@ -5,12 +5,8 @@ import site
 
 def check_virtualenv():
     # sys.prefix is the venv, sys.base_prefix is the system Python
-    if sys.prefix != sys.base_prefix:
-        return True
-    else:
-        return False
+    return sys.prefix != sys.base_prefix
 
-# if __name__ == "main":
 if check_virtualenv():
     env_path = sys.prefix
     env_name = os.path.basename(env_path)
@@ -26,7 +22,7 @@ if check_virtualenv():
     print("Package installation path:")
     print(site.getsitepackages()[0])
 
-    
+
 else:
     print("\nMATRIX STATUS: You're still plugged in\n")
     print(f"Current Python: {os.path.realpath(sys.executable)}")
@@ -47,4 +43,3 @@ else:
 
 # The name is often the last part of the path
 # print(env_name)
-
