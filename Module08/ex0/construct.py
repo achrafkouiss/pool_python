@@ -4,14 +4,24 @@ import site
 
 
 def check_virtualenv():
-    # sys.prefix is the venv, sys.base_prefix is the system Python
+    #sys.base_prefix: Points to the root directory of the base Python installation that was used to create the virtual environment
+    #sys.prefix: Points to the root directory of the current virtual environment
     return sys.prefix != sys.base_prefix
 
+
+# Check the environment state
 if check_virtualenv():
+    # Path of the active virtual environment
     env_path = sys.prefix
+
+    # Extract the environment name (last directory of the path)
     env_name = os.path.basename(env_path)
+
     print("\nMATRIX STATUS: Welcome to the construct\n")
+
+    # Path to the Python executable currently running
     print(f"Current Python: {sys.executable}")
+
     print(f"Virtual Environment: {env_name}")
     print(f"Environment Path: {env_path}\n")
 
@@ -19,13 +29,16 @@ if check_virtualenv():
     print("Safe to install packages without affecting")
     print("the global system.\n")
 
+    # Show where packages installed with pip will go
     print("Package installation path:")
     print(site.getsitepackages()[0])
 
-
 else:
     print("\nMATRIX STATUS: You're still plugged in\n")
+
+    # Real path of the global Python interpreter
     print(f"Current Python: {os.path.realpath(sys.executable)}")
+
     print("Virtual Environment: None detected\n")
 
     print("WARNING: You're in the global environment!")
@@ -33,13 +46,12 @@ else:
 
     print("To enter the construct, run:")
     print("python -m venv matrix_env")
-    print("source matrix_env/bin/activate # On Unix")
+    print("source matrix_env/bin/activate  # On Unix")
+
+    # Windows activation path split for clarity
     print("matrix_env")
     print("Scripts")
-    print("activate # On Windows\n")
+    print("activate  # On Windows\n")
 
     print("Then run this program again")
-# sys.prefix gives the root path of the current Python interpreter
 
-# The name is often the last part of the path
-# print(env_name)
