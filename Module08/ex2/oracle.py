@@ -1,5 +1,5 @@
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
 # Load environment variables from the .env file into the process environment
 load_dotenv()
@@ -67,8 +67,9 @@ else:
 
 print("Environment security check:")
 
-# Verify that a .env configuration file exists in the current directory
-if os.path.exists(".env"):
+# # Verify that a .env configuration file exists in the current directory
+env_path = find_dotenv()
+if env_path and os.path.exists(env_path):
     print("[OK] .env file detected")
 else:
     print("[WARNING] .env file missing")
