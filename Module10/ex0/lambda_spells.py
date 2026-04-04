@@ -15,56 +15,47 @@ mages = [
 
 spells = ["darkness", "heal", "tsunami", "shield"]
 
+
 def artifact_sorter(artifacts: list[dict]) -> list[dict]:
-    return sorted(artifacts, key = lambda artifact: artifact["power"], reverse=True)
+    return sorted(
+        artifacts, key=lambda artifact: artifact["power"], reverse=True
+        )
+
 
 def power_filter(mages: list[dict], min_power: int) -> list[dict]:
     return list(filter(lambda mage: mage["power"] >= min_power, mages))
 
+
 def spell_transformer(spells: list[str]) -> list[str]:
     return list(map(lambda x: "* " + x + " *", spells))
+
 
 def mage_stats(mages: list[dict]) -> dict:
     return {
         "max_power": max(mages, key=lambda m: m["power"])["power"],
         "min_power": min(mages, key=lambda m: m["power"])["power"],
         "avg_power": round(
-            sum(map(lambda m: m["power"], mages)) / len(mages),
-            2
-        )
+            sum(map(lambda m: m["power"], mages)) / len(mages), 2
+            ),
     }
 
-def main():
-    artifacts_list = artifact_sorter(artifacts)
-    
-    print ("\nTesting artifact sorter...\n")
-    for index in range(len(artifacts_list) - 1):
-        print(f"{artifacts_list[index]['name']} "
-        f"({artifacts_list[index]['power']} power)"
-        " comes before "
-        f"{artifacts_list[index + 1]['name']}"
-        f" ({artifacts_list[index + 1]['power']} power)")
 
-    print("Testing spell transformer...")
+def main() -> None:
+    artifacts_list = artifact_sorter(artifacts)
+
+    print("\nTesting artifact sorter...\n")
+    for index in range(len(artifacts_list) - 1):
+        print(
+            f"{artifacts_list[index]['name']} "
+            f"({artifacts_list[index]['power']} power)"
+            " comes before "
+            f"{artifacts_list[index + 1]['name']}"
+            f" ({artifacts_list[index + 1]['power']} power)"
+        )
+
+    print("\nTesting spell transformer...")
     print(*spell_transformer(spells))
 
-main()
 
-
-# def power_filter(mages: list[dict], min_power: int) -> list[dict]:
-#     powerfull_mages: list[dict] = []
-#     filtered_mages = filter(lambda mage: mage["power"] >= min_power, mages)
-#     for mage in filtered_mages:
-#         powerfull_mages += [mage]
-#     return powerfull_mages
-
-
-# def spell_transformer(spells: list[str]) -> list[str]:
-#     new_spells: list[str] = []
-#     prefix = "* "
-#     suffix = " *"
-#     filtered_mages = map(lambda x: prefix + x + suffix, spells)
-#     for spell in filtered_mages:
-#         new_spells += [spell]
-#     return new_spells
-
+if __name__ == "__main__":
+    main()

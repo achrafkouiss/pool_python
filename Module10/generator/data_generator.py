@@ -28,21 +28,24 @@ class FuncMageDataGenerator:
         "Zara",
         "Kai",
         "Rowan",
-        "Ash"]
+        "Ash",
+    ]
 
-    ELEMENTS = [
-        "fire",
-        "ice",
-        "lightning",
-        "earth",
-        "wind",
-        "water",
-        "light",
-        "shadow"]
+    ELEMENTS = ["fire", "ice", "lightning", "earth", "wind", "water", "light", "shadow"]
 
     SPELL_NAMES = [
-        "fireball", "heal", "shield", "lightning", "freeze", "earthquake",
-        "tornado", "tsunami", "flash", "darkness", "meteor", "blizzard"
+        "fireball",
+        "heal",
+        "shield",
+        "lightning",
+        "freeze",
+        "earthquake",
+        "tornado",
+        "tsunami",
+        "flash",
+        "darkness",
+        "meteor",
+        "blizzard",
     ]
 
     ARTIFACT_NAMES = [
@@ -55,7 +58,8 @@ class FuncMageDataGenerator:
         "Water Chalice",
         "Shadow Blade",
         "Light Prism",
-        "Storm Crown"]
+        "Storm Crown",
+    ]
 
     ARTIFACT_TYPES = ["weapon", "focus", "armor", "accessory", "relic"]
 
@@ -67,7 +71,8 @@ class FuncMageDataGenerator:
         "Windy",
         "Flowing",
         "Radiant",
-        "Dark"]
+        "Dark",
+    ]
 
     @classmethod
     def generate_mages(cls, count: int = 5) -> List[Dict[str, Any]]:
@@ -75,9 +80,9 @@ class FuncMageDataGenerator:
         mages = []
         for _ in range(count):
             mage = {
-                'name': random.choice(cls.MAGE_NAMES),
-                'power': random.randint(50, 100),
-                'element': random.choice(cls.ELEMENTS)
+                "name": random.choice(cls.MAGE_NAMES),
+                "power": random.randint(50, 100),
+                "element": random.choice(cls.ELEMENTS),
             }
             mages.append(mage)
         return mages
@@ -88,9 +93,9 @@ class FuncMageDataGenerator:
         artifacts = []
         for _ in range(count):
             artifact = {
-                'name': random.choice(cls.ARTIFACT_NAMES),
-                'power': random.randint(60, 120),
-                'type': random.choice(cls.ARTIFACT_TYPES)
+                "name": random.choice(cls.ARTIFACT_NAMES),
+                "power": random.randint(60, 120),
+                "type": random.choice(cls.ARTIFACT_TYPES),
             }
             artifacts.append(artifact)
         return artifacts
@@ -108,15 +113,7 @@ class FuncMageDataGenerator:
     @classmethod
     def generate_enchantment_items(cls, count: int = 5) -> List[str]:
         """Generate a list of items to be enchanted."""
-        items = [
-            "Sword",
-            "Shield",
-            "Staff",
-            "Wand",
-            "Armor",
-            "Ring",
-            "Amulet",
-            "Cloak"]
+        items = ["Sword", "Shield", "Staff", "Wand", "Armor", "Ring", "Amulet", "Cloak"]
         return random.sample(items, min(count, len(items)))
 
     @classmethod
@@ -138,29 +135,16 @@ class FuncMageDataGenerator:
 
         elif exercise_num == 2:
             print("# Memory Depths Test Data")
-            print(
-                "initial_powers =", [
-                    random.randint(
-                        20, 80) for _ in range(3)])
-            print(
-                "power_additions =", [
-                    random.randint(
-                        5, 20) for _ in range(5)])
-            print(
-                "enchantment_types =",
-                random.sample(
-                    cls.ENCHANTMENT_TYPES,
-                    3))
+            print("initial_powers =", [random.randint(20, 80) for _ in range(3)])
+            print("power_additions =", [random.randint(5, 20) for _ in range(5)])
+            print("enchantment_types =", random.sample(cls.ENCHANTMENT_TYPES, 3))
             print("items_to_enchant =", cls.generate_enchantment_items(4))
 
         elif exercise_num == 3:
             print("# Ancient Library Test Data")
             print("spell_powers =", cls.generate_spell_powers(6))
             print("operations = ['add', 'multiply', 'max', 'min']")
-            print(
-                "fibonacci_tests =", [
-                    random.randint(
-                        8, 20) for _ in range(3)])
+            print("fibonacci_tests =", [random.randint(8, 20) for _ in range(3)])
 
         elif exercise_num == 4:
             print("# Master's Tower Test Data")
@@ -193,25 +177,21 @@ def main():
 
         choice = input("Enter your choice: ").strip().lower()
 
-        if choice == 'q':
+        if choice == "q":
             print("May your functions be pure and your closures be strong! 🌟")
             break
-        elif choice in ['0', '1', '2', '3', '4']:
+        elif choice in ["0", "1", "2", "3", "4"]:
             FuncMageDataGenerator.print_exercise_data(int(choice))
-        elif choice == '5':
+        elif choice == "5":
             for i in range(5):
                 FuncMageDataGenerator.print_exercise_data(i)
-        elif choice == '6':
-            count = int(
-                input("How many mages to generate? (default 5): ") or 5)
+        elif choice == "6":
+            count = int(input("How many mages to generate? (default 5): ") or 5)
             print("mages =", FuncMageDataGenerator.generate_mages(count))
             print()
-        elif choice == '7':
-            count = int(
-                input("How many artifacts to generate? (default 5): ") or 5)
-            print(
-                "artifacts =",
-                FuncMageDataGenerator.generate_artifacts(count))
+        elif choice == "7":
+            count = int(input("How many artifacts to generate? (default 5): ") or 5)
+            print("artifacts =", FuncMageDataGenerator.generate_artifacts(count))
             print()
         else:
             print("Invalid choice. Please try again.")
